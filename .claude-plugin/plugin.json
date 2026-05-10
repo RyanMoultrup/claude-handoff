@@ -1,0 +1,9 @@
+{
+  "name": "claude-handoff",
+  "description": "Session handoff tools for Claude Code — write structured CHANGELOG.md entries that let a fresh session pick up exactly where you left off.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Ryan"
+  },
+  "homepage": "https://github.com/ryanscomputer/claude-plugins"
+}
