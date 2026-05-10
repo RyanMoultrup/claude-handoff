@@ -1,9 +1,8 @@
 {
   "name": "claude-handoff",
-  "description": "Session handoff tools for Claude Code — write structured CHANGELOG.md entries that let a fresh session pick up exactly where you left off.",
-  "version": "1.0.0",
+  "description": "End-of-session continuity tools. Writes HANDOFF.md (task snapshot for the next agent) and CHANGELOG.md (permanent project history). Use /claude-handoff:wrap-up to write both at once, or run each independently.",
+  "version": "2.0.0",
   "author": {
     "name": "Ryan"
-  },
-  "homepage": "https://github.com/ryanscomputer/claude-plugins"
+  }
 }

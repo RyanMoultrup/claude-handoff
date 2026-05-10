@@ -1,57 +1,67 @@
 # claude-handoff
 
-A Claude Code plugin for session handoff — writes structured `CHANGELOG.md` entries so a fresh Claude session can pick up exactly where you left off, without re-attempting dead ends or rediscovering decisions already made.
-
-## Skills
-
-### `/claude-handoff:changelog-update [path]`
-
-Writes a new session entry to `CHANGELOG.md`. Captures:
-
-- What was completed (specific file names, function names, exact numbers)
-- What failed and **why** (the mechanism, not just "it didn't work")
-- Decisions made and rationale (especially "why NOT X")
-- Test/accuracy results with exact numbers
-- Current project status and next concrete step
-
-The optional argument overrides the default `./CHANGELOG.md` path.
-
-Claude also invokes this skill automatically when you say things like:
-- "update the changelog"
-- "log what we did"
-- "write a session entry"
-- "save progress"
+Session continuity for Claude Code. Writes `HANDOFF.md` (task snapshot for the next agent) and `CHANGELOG.md` (permanent project history). Use together at end of session, or independently as needed.
 
 ## Install
 
-### From this repo (local)
-
 ```bash
-claude --plugin-dir /path/to/claude-handoff
-```
+# Local
+claude --plugin-dir /path/to/claude-plugins/claude-handoff
 
-### From GitHub (once pushed)
-
-In Claude Code:
-```
-/plugin marketplace add yourusername/claude-plugins
+# From private GitHub marketplace
+/plugin marketplace add ryanscomputer/claude-plugins
 /plugin install claude-handoff@claude-plugins
 ```
 
-## Usage
+## Commands
 
-At the end of a session:
+| Command | What it does |
+|---------|-------------|
+| `/claude-handoff:wrap-up` | **Use this most of the time.** Writes both HANDOFF.md and CHANGELOG.md in one pass. |
+| `/claude-handoff:handoff` | Writes only HANDOFF.md — full task snapshot for the next agent. |
+| `/claude-handoff:quick` | Writes a minimal HANDOFF.md — 5 fields, for simple tasks. |
+| `/claude-handoff:resume` | Reads HANDOFF.md, checks for repo drift, orients the new session. |
+| `/claude-handoff:changelog-update` | Writes only a new CHANGELOG.md entry — no handoff file touched. |
+
+## The two files
+
+### HANDOFF.md — task snapshot
+Fully overwritten every session. Tells the next agent exactly where things stand right now:
+- What's done and what isn't
+- What was tried and failed (and *why* — the mechanism)
+- Key decisions and rationale
+- Current broken state with verbatim error messages
+- Step-by-step resume instructions with expected outcomes
+
+This file is optimized for resuming a specific task. It has no memory of previous sessions — only the current one.
+
+### CHANGELOG.md — project ledger
+Append-only, never overwritten. Accumulates across every session:
+- Reverse-chronological entries with specific, descriptive headers
+- Permanent "Failed approaches" section (the most important section — prevents re-attempting dead ends)
+- Permanent "Confirmed correct" section (closes investigations)
+- Status header that reflects where the project stands right now
+
+This file is optimized for long-running project memory. A fresh session can read it cold and understand the full history of what was tried and why.
+
+## Auto-detection
+
+The plugin's skill activates automatically:
+
+- **Session start**: If `HANDOFF.md` exists, Claude reads it and asks if you want to resume
+- **Wrap-up signals**: "let's stop here", "I need to go", "wrap this up" → Claude suggests `/wrap-up`
+- **Handoff signals**: "handoff", "switching agents", "continue later" → suggests appropriate command
+- **Changelog signals**: "update the changelog", "log what we did" → suggests `/changelog-update`
+- **Resume signals**: "pick up where we left off", "resume" → suggests `/resume`
+
+## Typical session flow
+
 ```
-/claude-handoff:changelog-update
+# Start of session — Claude detects HANDOFF.md automatically
+/claude-handoff:resume
+
+# ... do work ...
+
+# End of session
+/claude-handoff:wrap-up
 ```
-
-Or with a custom path:
-```
-/claude-handoff:changelog-update docs/CHANGELOG.md
-```
-
-## Why
-
-Claude has no memory between sessions. A well-written changelog entry is the difference between a fresh session that hits the ground running and one that wastes 20 minutes rediscovering what you already know.
-
-The format follows Anthropic's long-running agent research: reverse-chronological entries, permanent "failed approaches" and "confirmed correct" sections, and a status header that reflects the current state of the project — not aspirations.
