@@ -1,0 +1,20 @@
+{
+  "name": "claude-handoff",
+  "owner": {
+    "name": "Ryan"
+  },
+  "metadata": {
+    "description": "End-of-session continuity tools for Claude Code"
+  },
+  "plugins": [
+    {
+      "name": "claude-handoff",
+      "source": {
+        "source": "github",
+        "repo": "RyanMoultrup/claude-handoff"
+      },
+      "description": "End-of-session continuity tools. Writes HANDOFF.md (task snapshot for the next agent) and CHANGELOG.md (permanent project history). Use /claude-handoff:wrap-up to write both at once, or run each independently.",
+      "version": "2.0.0"
+    }
+  ]
+}
